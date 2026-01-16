@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp.Interfaces
 {
-    public interface IGenerator
+    public interface IInfo
     {
-        
+        string GetInfo();
     }
 }
