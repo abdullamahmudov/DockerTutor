@@ -7,8 +7,17 @@ namespace PatternBase.Interfaces
 {
     public interface IEntity
     {
+        /// <summary>
+        /// Идентификатор
+        /// </summary>
         long Id { get; }
+        /// <summary>
+        /// Наименование
+        /// </summary>
         string Name { get; }
+        /// <summary>
+        /// Цена
+        /// </summary>
         decimal Price { get; }
     }
 }

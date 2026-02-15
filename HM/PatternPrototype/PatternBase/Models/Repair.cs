@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace PatternBase.Models
 {
-    public class Installation : AService
+    public class Repair : AService
     {
         /// <summary>
         /// Список мебели
@@ -13,8 +13,8 @@ namespace PatternBase.Models
         /// <returns></returns>
         public List<Furniture> Furnitures { get; private set; } = new List<Furniture>();
         /// <inheritdoc/>
-        public override decimal Price => Furnitures.Sum(f => f.InstallationPrice);
-        public Installation(long id, string name) : base(id, name)
+        public override decimal Price => Furnitures.Sum(f => f.RepairPrice);
+        public Repair(long id, string name) : base(id, name)
         {
         }
 

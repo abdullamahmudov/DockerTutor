@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace PatternBase.Interfaces
 {
-    public interface IMyClonable
+    public interface IMyCloneable<T>
     {
-        
+        T Clone();
     }
 }
