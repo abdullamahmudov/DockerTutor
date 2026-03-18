@@ -45,3 +45,7 @@ kubectl rollout restart deployment -n {namespace} # перезапуск deploym
 ```bash
 kubectl get events --namespace={namespace} # получение событий в namespace
 ```
+
+```bash
+kubectl port-forward pgadmin-deployment-***-*** 5050:80 -n <namespace> # переадресация портов
+```
