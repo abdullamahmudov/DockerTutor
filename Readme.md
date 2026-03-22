@@ -49,3 +49,7 @@ kubectl get events --namespace={namespace} # получение событий �
 ```bash
 kubectl port-forward pgadmin-deployment-***-*** 5050:80 -n <namespace> # переадресация портов
 ```
+
+```bash
+kubectl scale --replicas=3 {deployment} # изменить количество реплик в deployment
+```
