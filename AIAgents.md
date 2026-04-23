@@ -6,6 +6,7 @@ supermaven
 
 continue.dev
 
+Cody
 
 # Editors
 
