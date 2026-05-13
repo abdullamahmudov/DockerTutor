@@ -8,6 +8,10 @@ continue.dev
 
 Cody
 
+sourcegraph
+
+anthropic
+
 # Editors
 
 Cursor
