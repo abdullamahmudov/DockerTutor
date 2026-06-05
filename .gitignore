@@ -268,8 +268,8 @@ __pycache__/
 */coverage.json
 .DS_Store
 
-
 .vscode/
 /data/*
 
 /llamaCPP/models/*
+/RustDesk/data/*
