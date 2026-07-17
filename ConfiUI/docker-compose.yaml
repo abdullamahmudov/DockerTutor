@@ -1,0 +1,43 @@
+version: "3.9"
+services:
+  confi-ui:
+    container_name: comfyui-nvidia-container
+    image: mmartial/comfyui-nvidia-docker:latest
+    # command:
+      # - "--runtime nvidia"
+      # - "--gpus all"
+    volumes:
+      - confi-output-basedir:/basedir
+      - confi-output-run:/comfy/mnt
+    # restart: unless-stopped
+    environment:
+      USE_UV: true
+      WANTED_UID: ${id}
+      WANTED_GID: ${id}
+      BASE_DIRECTORY: /basedir
+      SECURITY_LEVEL: normal
+      USE_NEW_MANAGER: true
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
+    ports:
+      - "8188:8188"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities:
+                - gpu
+                - compute
+                - utility
+    userns_mode: "keep-id"
+
+volumes:
+  confi-output-run:
+  confi-output-basedir:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${CONFI_OUTPUT_BASEDIR}
+      o: bind
