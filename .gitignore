@@ -273,3 +273,7 @@ __pycache__/
 
 /llamaCPP/models/*
 /RustDesk/data/*
+
+/ConfiUI/confi_output/*
+
+*.csproj.lscache
