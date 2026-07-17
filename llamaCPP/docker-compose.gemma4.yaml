@@ -1,12 +1,12 @@
 version: "3.9"
 
 services:
-  llama-cpp:
+  llama-cpp-gemma4-26b-q4-k-m:
     image: ghcr.io/ggml-org/llama.cpp:server-cuda13
-    container_name: llama-cpp-container
+    container_name: llama-cpp-gemma4-26b-q4-k-m-container
     restart: always
     ports:
-      - "9722:8080"
+      - "9723:8080"
     volumes:
       - models:/path/to/models
     deploy:
@@ -16,8 +16,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    # command: -m /path/to/models/Qwen3.6-35B-A3B-Q4_K_M.gguf --host 0.0.0.0 --port 8080 --n-gpu-layers 999 --n-predict -1 --ctx-size 16384 --context-shift --no-mmap --batch-size 512 --no-prompt-patience --no-checkpoints --threads 16
-    command: -m /path/to/models/Qwen3.6-35B-A3B-Q4_K_M.gguf --host 0.0.0.0 --port 8080 --n-gpu-layers 999 --n-predict -1 --ctx-size 16384 --context-shift --no-mmap --batch-size 512 --threads 8
+    command: -m /path/to/models/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf --host 0.0.0.0 --port 8080 --ctx-size 262144 -ngl 99 --cache-type-k q8_0 --cache-type-v q8_0 --keep 512 --batch-size 512 --ubatch-size 256 --threads 8 --threads-batch 16 --parallel 1 --timeout 1800 --cache-reuse 256 --poll 50 --flash-attn auto --fit off --reasoning off --reasoning-budget 0 --jinja --repeat-penalty 1.1
     networks:
       - llama-cpp-network
 
