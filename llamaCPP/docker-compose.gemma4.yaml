@@ -2,7 +2,19 @@ version: "3.9"
 
 services:
   llama-cpp-gemma4-26b-q4-k-m:
-    image: ghcr.io/ggml-org/llama.cpp:server-cuda13
+    build:
+      # 1. Указываем контекстом папку с исходниками, а не корень проекта
+      context: ./rep/llama.cpp
+      # 2. Путь к Dockerfile теперь относительный от context (используем прямые слеши)
+      dockerfile: .devops/cuda.Dockerfile
+      # 3. Переносим build-arg сюда, чтобы он сработал при компиляции
+      args:
+        CUDA_VERSION: 13.1.1
+        CUDA_DOCKER_ARCH: "86"
+        # Если вы собираете образ на той же машине, где будете его запускать, можно использовать native. CMake сам определит архитектуру вашей видеокарты
+        # CUDA_DOCKER_ARCH: "native"
+        # Если вы хотите, чтобы образ работал на разных видеокартах (но сборка будет дольше)
+        # CUDA_DOCKER_ARCH: "all-major"
     container_name: llama-cpp-gemma4-26b-q4-k-m-container
     restart: always
     ports:
@@ -16,7 +28,50 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: -m /path/to/models/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf --host 0.0.0.0 --port 8080 --ctx-size 262144 -ngl 99 --cache-type-k q8_0 --cache-type-v q8_0 --keep 512 --batch-size 512 --ubatch-size 256 --threads 8 --threads-batch 16 --parallel 1 --timeout 1800 --cache-reuse 256 --poll 50 --flash-attn auto --fit off --reasoning off --reasoning-budget 0 --jinja --repeat-penalty 1.1
+    command: 
+      - "-m"
+      - "/path/to/models/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf"
+      - "--host"
+      - "0.0.0.0"
+      - "--port"
+      - "8080"
+      - "--ctx-size"
+      - "262144"
+      - "-ngl"
+      - "99"
+      - "--cache-type-k"
+      - "q8_0"
+      - "--cache-type-v"
+      - "q8_0"
+      - "--keep"
+      - "512"
+      - "--batch-size"
+      - "512"
+      - "--ubatch-size"
+      - "256"
+      - "--threads"
+      - "8"
+      - "--threads-batch"
+      - "16"
+      - "--parallel"
+      - "1"
+      - "--timeout"
+      - "1800"
+      - "--cache-reuse"
+      - "256"
+      - "--poll"
+      - "50"
+      - "--flash-attn"
+      - "auto"
+      - "--fit"
+      - "off"
+      - "--reasoning"
+      - "off"
+      - "--reasoning-budget"
+      - "0"
+      - "--jinja"
+      - "--repeat-penalty"
+      - "1.1"
     networks:
       - llama-cpp-network
 

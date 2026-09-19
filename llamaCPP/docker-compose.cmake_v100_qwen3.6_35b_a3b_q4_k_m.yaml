@@ -1,0 +1,68 @@
+services:
+  llama:
+    build:
+      context: .
+      dockerfile: V100.Dockerfile
+      args:
+        CUDA_VERSION: "11.4.3"    # для 11.4.3 добавьте UBUNTU_VERSION: "20.04"
+        LLAMA_CPP_REF: "b5900"   # при проблемах со сборкой замените на тег, например b6000
+        CUDA_ARCH: "70"           # V100 = compute capability 7.0
+        UBUNTU_VERSION: "20.04"
+    image: llama-cpp-v100:cuda11.4
+    container_name: llama-cpp-cmake-v100-qwen3.6-35b-a3b-q4-k-m-container
+    restart: unless-stopped
+    ports:
+      - "9722:8080"     # только локально; уберите 127.0.0.1:, чтобы открыть в сеть
+    volumes:
+      - ./models:/models:ro
+    command:
+      - "-m"
+      - "/models/Qwen3.6-35B-A3B-Q4_K_M.gguf"      # замените на имя вашей модели
+      - "--host"
+      - "0.0.0.0"
+      - "--port"
+      - "8080"
+      - "--ctx-size"
+      - "262144"
+      - "-ngl"
+      - "99"
+      - "--cache-type-k"
+      - "q8_0"
+      - "--cache-type-v"
+      - "q8_0"
+      - "--keep"
+      - "512"
+      - "--batch-size"
+      - "512"
+      - "--ubatch-size"
+      - "256"
+      - "--threads"
+      - "8"
+      - "--threads-batch"
+      - "16"
+      - "--parallel"
+      - "1"
+      - "--timeout"
+      - "1800"
+      - "--cache-reuse"
+      - "256"
+      - "--poll"
+      - "50"
+      - "--flash-attn"
+      - "auto"
+      - "--fit"
+      - "off"
+      - "--reasoning"
+      - "off"
+      - "--reasoning-budget"
+      - "0"
+      - "--jinja"
+      - "--repeat-penalty"
+      - "1.1"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
