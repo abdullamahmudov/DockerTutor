@@ -8,7 +8,7 @@ services:
         LLAMA_CPP_REF: "b5900"   # при проблемах со сборкой замените на тег, например b6000
         CUDA_ARCH: "70"           # V100 = compute capability 7.0
         UBUNTU_VERSION: "20.04"
-    image: llama-cpp-v100:cuda11.4
+    image: llama-cpp-v100:cuda11.4.3
     container_name: llama-cpp-cmake-v100-qwen3.6-35b-a3b-q4-k-m-container
     restart: unless-stopped
     ports:
@@ -17,7 +17,7 @@ services:
       - ./models:/models:ro
     command:
       - "-m"
-      - "/models/Qwen3.6-35B-A3B-Q4_K_M.gguf"      # замените на имя вашей модели
+      - "/models/Qwen3.6-35B-A3B-Q4_K_M.gguf"
       - "--host"
       - "0.0.0.0"
       - "--port"

@@ -9,7 +9,7 @@ ARG UBUNTU_VERSION=20.04
 FROM nvidia/cuda:${CUDA_VERSION}-devel-ubuntu${UBUNTU_VERSION} AS build
 ENV DEBIAN_FRONTEND=noninteractive
 
-ARG LLAMA_CPP_REF=master
+ARG LLAMA_CPP_REF=b5900
 ARG CUDA_ARCH=70
  
 RUN apt-get update && apt-get install -y --no-install-recommends \
