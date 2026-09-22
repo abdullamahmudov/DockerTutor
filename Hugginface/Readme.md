@@ -15,7 +15,7 @@ python download_model_simple.py --url https://huggingface.co/unsloth/GLM-4.7-Fla
 ```
 
 ```bash
-py -3 download_model_simple.py --url https://huggingface.co/unsloth/GLM-4.7-Flash-GGUF/blob/main/GLM-4.7-Flash-UD-Q5_K_XL.gguf --path ./models
+py -3 .\Hugginface\download_model_simple.py --url https://huggingface.co/unsloth/GLM-4.7-Flash-GGUF/blob/main/GLM-4.7-Flash-UD-Q5_K_XL.gguf --path .\llamaCPP\models\
 ```
 
 Также можно использовать классический способ с указанием source и model отдельно:
