@@ -1,0 +1,1 @@
+Get-PnpDevice -FriendlyName "*Tesla*" | Enable-PnpDevice -Confirm:$false

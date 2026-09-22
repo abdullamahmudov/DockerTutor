@@ -1,0 +1,95 @@
+services:
+  llama:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda12
+    container_name: llama-cpp-cuda_12-v100-${MODEL_NAME}-container
+    restart: always
+    ports:
+      - "9722:8080"     # только локально; уберите 127.0.0.1:, чтобы открыть в сеть
+    volumes:
+      - ./models:/models:ro
+    command:
+      - "-m"
+      - "/models/${MODEL_FILE_NAME}"
+      - "--host"
+      - "0.0.0.0"
+      - "--port"
+      - "8080"
+      # - "--api-key"
+      # - "your_secret_key_here"
+      - "--ctx-size"
+      # - "262144"
+      # - "131072"
+      - "65536"
+      # - "32768"
+      # - "--n-gpu-layers"
+      # - "15"
+      # - "--spec-type draft-mtp"
+      # - "--spec-draft-n-max"
+      # - "2"
+      # Распределение слоев между RAM и VRAM
+      - "-ngl"
+      - "99"
+      # - "40"
+      - "--cache-type-k"
+      - "q8_0"
+      - "--cache-type-v"
+      - "q8_0"
+      - "--keep"
+      - "512"
+      - "--batch-size"
+      - "512"
+      - "--ubatch-size"
+      - "256"
+      - "--threads"
+      - "12"
+      - "--threads-batch"
+      - "16"
+      - "--parallel"
+      - "1"
+      - "--timeout"
+      - "1800"
+      - "--cache-reuse"
+      - "256"
+      - "--poll"
+      - "50"
+      - "--flash-attn"
+      - "auto"
+      - "--fit"
+      - "off"
+      - "--reasoning"
+      - "off"
+      - "--reasoning-budget"
+      - "0"
+      - "--jinja"
+      - "--repeat-penalty"
+      - "1.1"
+      - "--presence-penalty"
+      - "0.5"
+      # --- Контроль генерации (КРИТИЧНО ДЛЯ АГЕНТОВ) ---
+      - "--temp"
+      - "0.0"
+      - "--top-p"
+      - "0.9"
+      - "--min-p"
+      - "0.05"
+      # Блокировка модели в RAM
+      # - "--mlock"
+      # - "--verbose"
+      # --- Стоп-токены (предотвращают бесконечный мусор) ---
+      # - "--stop"
+      # - "</think>"
+      # - "--stop"
+      # - "<|user|>"
+      # - "--stop"
+      # - "<|observation|>"
+      # - "--stop"
+      # - "<|assistant|>"
+      # - "--stop"
+      # - "</tool_call>"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
