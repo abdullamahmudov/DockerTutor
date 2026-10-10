@@ -9,7 +9,7 @@ services:
       - ./models:/models:ro
     command:
       - "-m"
-      - "/models/${MODEL_FILE_NAME}"
+      - "/models/${MODEL_NAME}.gguf"
       - "--host"
       - "0.0.0.0"
       - "--port"
