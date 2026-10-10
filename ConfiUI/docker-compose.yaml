@@ -2,7 +2,7 @@ version: "3.9"
 services:
   confi-ui:
     container_name: comfyui-nvidia-container
-    image: mmartial/comfyui-nvidia-docker:latest
+    image: mmartial/comfyui-nvidia-docker:ubuntu24_cuda12.6.3-latest
     # command:
       # - "--runtime nvidia"
       # - "--gpus all"
@@ -19,6 +19,9 @@ services:
       USE_NEW_MANAGER: true
       NVIDIA_VISIBLE_DEVICES: all
       NVIDIA_DRIVER_CAPABILITIES: all
+      PREINSTALL_TORCH: true
+      USE_PIPUPGRADE: false
+      # DISABLE_UPGRADES: true
     ports:
       - "8188:8188"
     deploy:
