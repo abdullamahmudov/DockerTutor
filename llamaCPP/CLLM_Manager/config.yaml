@@ -1,0 +1,11 @@
+# Конфигурация CLLM Manager
+modelsPath: D:\Work\Custom\DockerTutor\DockerTutor\llamaCPP\models
+dockerfile: D:\Work\Custom\DockerTutor\DockerTutor\llamaCPP\V100.Dockerfile
+image: llama-cpp-v100:cuda11.4.3
+portBase: 9722
+# hfToken: hf_xxx...   # раскомментируйте для gated-моделей HuggingFace
+buildArgs:
+  cudaVersion: "11.4.3"
+  ubuntuVersion: "20.04"
+  llamaCppRef: b5900
+  cudaArch: "70"

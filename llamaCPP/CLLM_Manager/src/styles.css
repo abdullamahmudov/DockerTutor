@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  background: #0f1115;
+  color: #e5e7eb;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #374151 #111827;
+}
+
+/* тонкие рамки для панелей */
+@utility panel {
+  @apply rounded-lg border border-gray-800 bg-[#161a22];
+}
+
+@utility btn {
+  @apply rounded-md px-3 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40;
+}
+
+@utility btn-primary {
+  @apply btn bg-indigo-600 text-white hover:bg-indigo-500;
+}
+
+@utility btn-danger {
+  @apply btn bg-red-700/80 text-white hover:bg-red-600;
+}
+
+@utility btn-ghost {
+  @apply btn border border-gray-700 bg-transparent text-gray-300 hover:bg-gray-800;
+}
+
+@utility input {
+  @apply rounded-md border border-gray-700 bg-[#0f1115] px-2 py-1.5 text-sm text-gray-200 outline-none focus:border-indigo-500;
+}
+
+.log-line {
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #9ca3af;
+}
