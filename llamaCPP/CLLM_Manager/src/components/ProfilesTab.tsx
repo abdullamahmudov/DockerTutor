@@ -132,6 +132,7 @@ export default function ProfilesTab(props: Props) {
               paramDefs={paramDefs}
               models={models}
               running={!!props.selectedStatus?.running}
+              originalName={selected ?? ""}
               busy={busy}
               onRefreshModels={props.onRefreshModels}
               onSave={handleSave}
@@ -172,36 +173,42 @@ interface EditorProps {
   paramDefs: ParamDef[];
   models: ModelInfo[];
   running: boolean;
+  originalName: string;
   busy: boolean;
   onRefreshModels: () => Promise<void>;
   onSave: () => Promise<void>;
 }
 
-// «Проверенный набор V100» из Readme.md
+// «Проверенный набор V100» из docker-compose.v100_CUDA12.yaml
 const V100_PRESET: Record<string, string | null> = {
-  "--ctx-size": "65536",
+  "--ctx-size": "131072",
   "-ngl": "99",
   "--cache-type-k": "q8_0",
   "--cache-type-v": "q8_0",
   "--keep": "512",
-  "--batch-size": "512",
-  "--ubatch-size": "256",
+  "--batch-size": "1024",
+  "--ubatch-size": "512",
   "--threads": "12",
   "--threads-batch": "16",
   "--parallel": "1",
   "--timeout": "1800",
-  "--cache-reuse": "256",
   "--poll": "50",
   "--flash-attn": "auto",
   "--fit": "off",
-  "--reasoning": "off",
-  "--reasoning-budget": "0",
+  "--reasoning": "on",
+  "--reasoning-budget": "2048",
+  "--reasoning-budget-message": "I should stop thinking and act now.",
+  "--no-reasoning-preserve": null,
+  "--ctx-checkpoints": "32",
+  "--checkpoint-min-step": "2048",
+  "--cache-ram": "16384",
   "--jinja": null,
-  "--repeat-penalty": "1.1",
+  "--repeat-penalty": "1.0",
   "--presence-penalty": "0.5",
-  "--temp": "0.0",
-  "--top-p": "0.9",
-  "--min-p": "0.05",
+  "--temp": "0.6",
+  "--top-p": "0.95",
+  "--top-k": "20",
+  "--min-p": "0.0",
 };
 
 function Editor({
@@ -210,6 +217,7 @@ function Editor({
   paramDefs,
   models,
   running,
+  originalName,
   busy,
   onRefreshModels,
   onSave,
@@ -255,9 +263,13 @@ function Editor({
           <input
             className="input w-full"
             value={draft.name}
-            disabled={running}
             onChange={(e) => setDraft((d) => (d ? { ...d, name: e.target.value } : d))}
           />
+          {running && draft.name !== originalName && (
+            <span className="mt-1 block text-xs text-yellow-500">
+              контейнер запущен — переименуется при сохранении
+            </span>
+          )}
         </label>
         <label className="col-span-2 text-sm">
           <span className="mb-1 block text-gray-400">Модель (GGUF из папки моделей)</span>
@@ -295,7 +307,7 @@ function Editor({
       </div>
       {/* Кнопка набора V100 */}
       <div className="mb-3">
-        <button className="btn-ghost" onClick={applyV100} title="Заполнить значениями из Readme.md (блок «Оптимально работающие модели»)">
+        <button className="btn-ghost" onClick={applyV100} title="Заполнить значениями из docker-compose.v100_CUDA12.yaml (V100, CUDA 12)">
           ⚡ Заполнить проверенным набором V100
         </button>
       </div>

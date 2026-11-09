@@ -29,7 +29,8 @@ fn no_opts() -> Vec<&'static str> {
     Vec::new()
 }
 
-/// Каталог параметров (источники: Readme.md + docker-compose.cmake_v100.yaml).
+/// Каталог параметров (источники: Readme.md + docker-compose.cmake_v100.yaml
+/// + docker-compose.v100_CUDA12.yaml).
 pub fn catalog() -> Vec<ParamDef> {
     let mut v = vec![
         // ---------- Контекст и память ----------
@@ -109,6 +110,17 @@ V100 = Volta (sm_70) — НЕ поддерживается; 'auto' — безо�
             options: sel(KV_TYPES),
             default: Some("q8_0"),
             help: "То же, что --cache-type-k, но для V. Рекомендации те же: q8_0 — оптимум.",
+        },
+        ParamDef {
+            flag: "--cache-ram",
+            short: None,
+            name: "KV-кэш в системной ОЗУ (МБ)",
+            group: "Контекст и память",
+            kind: "int",
+            options: no_opts(),
+            default: Some("16384"),
+            help: "Максимальный размер KV-кэша в системной ОЗУ, МБ (-1 = без лимита). \
+16384 (16 ГБ) позволяет держать хвост кэша 128K-контекста в RAM, разгружая VRAM.",
         },
         ParamDef {
             flag: "--load-mode",
@@ -256,6 +268,17 @@ fn sampling() -> Vec<ParamDef> {
             help: "Ядровое (nucleus) сэмплирование: порог накопленной вероятности.",
         },
         ParamDef {
+            flag: "--top-k",
+            short: None,
+            name: "Top-k",
+            group: "Генерация (sampling)",
+            kind: "int",
+            options: no_opts(),
+            default: Some("20"),
+            help: "Оставлять только k самых вероятных токенов (0 = выключено). \
+20 — стандарт для большинства LLM; не ставьте 1 (дегенерация).",
+        },
+        ParamDef {
             flag: "--min-p",
             short: None,
             name: "Min-p",
@@ -318,6 +341,28 @@ fn sampling() -> Vec<ParamDef> {
             help: "Число токенов для переиспользования из KV-кэша между запросами.",
         },
         ParamDef {
+            flag: "--ctx-checkpoints",
+            short: None,
+            name: "Контрольные точки KV-кэша",
+            group: "Генерация (sampling)",
+            kind: "int",
+            options: no_opts(),
+            default: Some("32"),
+            help: "Максимум контрольных точек KV-кэша на слот (работает в связке с --cache-reuse: \
+позволяет «откатывать» кэш при ветвлении/повторе запросов). 32 — достаточно.",
+        },
+        ParamDef {
+            flag: "--checkpoint-min-step",
+            short: None,
+            name: "Мин. интервал точек (токенов)",
+            group: "Генерация (sampling)",
+            kind: "int",
+            options: no_opts(),
+            default: Some("2048"),
+            help: "Минимальный интервал между контрольными точками KV-кэша в токенах (0 = без минимума). \
+2048 — точки чаще, выше точность отката, чуть больше памяти.",
+        },
+        ParamDef {
             flag: "--fit",
             short: None,
             name: "Fit",
@@ -346,6 +391,28 @@ fn sampling() -> Vec<ParamDef> {
             options: no_opts(),
             default: Some("0"),
             help: "Бюджет токенов на рассуждения. 0 = без бюджета.",
+        },
+        ParamDef {
+            flag: "--reasoning-budget-message",
+            short: None,
+            name: "Сообщение при исчерпании бюджета",
+            group: "Генерация (sampling)",
+            kind: "str",
+            options: no_opts(),
+            default: None,
+            help: "Сообщение, впрыскиваемое перед закрывающим тегом размышлений, когда бюджет \
+исчерпан (мягко «останавливает» модель). По умолчанию не задано.",
+        },
+        ParamDef {
+            flag: "--no-reasoning-preserve",
+            short: None,
+            name: "Не хранить следы рассуждений в истории",
+            group: "Генерация (sampling)",
+            kind: "bool",
+            options: no_opts(),
+            default: None,
+            help: "По умолчанию след размышлений хранится во всей истории диалога. С флагом — \
+только в последнем сообщении: экономит контекст (рекомендуется для агентов).",
         },
         ParamDef {
             flag: "--jinja",

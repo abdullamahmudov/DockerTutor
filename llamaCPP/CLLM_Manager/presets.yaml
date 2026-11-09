@@ -1,2 +1,117 @@
-# Профили запуска llama.cpp (управляется приложением CLLM Manager)
-profiles: []
+profiles:
+- name: cuda12_v100_qwen3.8_27_ud_q6_k_m
+  model: Qwen3.8-27B-UD-Q6_K_M.gguf
+  port: 9722
+  params:
+  - flag: --ctx-size
+    value: '131072'
+    enabled: true
+  - flag: --n-predict
+    value: '-1'
+    enabled: false
+  - flag: --keep
+    value: '512'
+    enabled: true
+  - flag: --swa-full
+    enabled: false
+  - flag: --flash-attn
+    value: auto
+    enabled: true
+  - flag: --cache-type-k
+    value: q8_0
+    enabled: true
+  - flag: --cache-type-v
+    value: q8_0
+    enabled: true
+  - flag: --load-mode
+    value: auto
+    enabled: false
+  - flag: -ngl
+    value: '99'
+    enabled: true
+  - flag: --kv-offload
+    enabled: false
+  - flag: --repack
+    enabled: false
+  - flag: --threads
+    value: '12'
+    enabled: true
+  - flag: --threads-batch
+    value: '16'
+    enabled: true
+  - flag: --poll
+    value: '50'
+    enabled: true
+  - flag: --prio
+    value: '0'
+    enabled: false
+  - flag: --cpu-mask
+    enabled: false
+  - flag: --cpu-range
+    enabled: false
+  - flag: --temp
+    value: '0.6'
+    enabled: true
+  - flag: --top-p
+    value: '0.95'
+    enabled: true
+  - flag: --min-p
+    value: '0.0'
+    enabled: true
+  - flag: --repeat-penalty
+    value: '1.0'
+    enabled: true
+  - flag: --presence-penalty
+    value: '0.5'
+    enabled: true
+  - flag: --batch-size
+    value: '1024'
+    enabled: true
+  - flag: --ubatch-size
+    value: '512'
+    enabled: true
+  - flag: --cache-reuse
+    value: '256'
+    enabled: false
+  - flag: --fit
+    value: off
+    enabled: true
+  - flag: --reasoning
+    value: on
+    enabled: true
+  - flag: --reasoning-budget
+    value: '2048'
+    enabled: true
+  - flag: --jinja
+    enabled: true
+  - flag: --rope-scaling
+    enabled: false
+  - flag: --rope-scale
+    enabled: false
+  - flag: --rope-freq-base
+    enabled: false
+  - flag: --rope-freq-scale
+    enabled: false
+  - flag: --yarn-orig-ctx
+    enabled: false
+  - flag: --yarn-ext-factor
+    enabled: false
+  - flag: --yarn-attn-factor
+    enabled: false
+  - flag: --yarn-beta-slow
+    enabled: false
+  - flag: --yarn-beta-fast
+    enabled: false
+  - flag: --timeout
+    value: '1800'
+    enabled: true
+  - flag: --parallel
+    value: '1'
+    enabled: true
+  - flag: --api-key
+    enabled: false
+  - flag: --perf
+    enabled: false
+  - flag: --escape
+    enabled: false
+  rawArgs: []

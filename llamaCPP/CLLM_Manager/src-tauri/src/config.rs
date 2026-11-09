@@ -230,4 +230,20 @@ rawArgs:
         assert_eq!(p.params.len(), crate::params::catalog().len());
         assert!(p.params.iter().all(|e| !e.enabled));
     }
+
+    /// В каталоге есть флаги из docker-compose.v100_CUDA12.yaml.
+    #[test]
+    fn catalog_has_v100_compose_flags() {
+        let flags: Vec<&str> = crate::params::catalog().iter().map(|d| d.flag).collect();
+        for f in [
+            "--top-k",
+            "--reasoning-budget-message",
+            "--no-reasoning-preserve",
+            "--ctx-checkpoints",
+            "--checkpoint-min-step",
+            "--cache-ram",
+        ] {
+            assert!(flags.contains(&f), "в каталоге отсутствует флаг {f}");
+        }
+    }
 }

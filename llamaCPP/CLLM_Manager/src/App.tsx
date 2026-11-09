@@ -14,6 +14,8 @@ import SettingsTab from "./components/SettingsTab";
 
 type Tab = "profiles" | "hf" | "settings";
 
+const ts = () => new Date().toLocaleTimeString("ru-RU");
+
 export default function App() {
   const [tab, setTab] = useState<Tab>("profiles");
   const [config, setConfig] = useState<AppConfig | null>(null);
@@ -81,19 +83,38 @@ export default function App() {
   useEffect(() => {
     if (!selected) return;
     let un: UnlistenFn | undefined;
-    setViewLogs([]);
-    invoke("open_logs", { name: selected }).catch(() => {});
-    listen<{ line: string }>("container-log", (ev) => {
+    let cancelled = false;
+    setViewLogs([`— ${ts()} Логи профиля «${selected}» —`]);
+    // Сначала регистрируем слушатель, потом запускаем tailer,
+    // иначе первые строки (docker logs --tail) теряются
+    listen<{ profile: string; line: string }>("container-log", (ev) => {
+      if (ev.payload.profile !== selected) return;
       setViewLogs((prev) => {
         const next = [...prev, ev.payload.line];
         if (next.length > 3000) next.splice(0, next.length - 3000);
         return next;
       });
-    }).then((u) => (un = u));
+    }).then((u) => {
+      if (cancelled) {
+        u();
+        return;
+      }
+      un = u;
+      invoke("open_logs", { name: selected }).catch(() => {});
+    });
     return () => {
+      cancelled = true;
       un?.();
     };
   }, [selected]);
+
+  const appendLogLine = useCallback((line: string) => {
+    setViewLogs((prev) => {
+      const next = [...prev, line];
+      if (next.length > 3000) next.splice(0, next.length - 3000);
+      return next;
+    });
+  }, []);
 
   const saveProfilesToDisk = useCallback(async (list: Profile[]) => {
     await invoke("save_profiles", { profiles: list });
@@ -113,11 +134,20 @@ export default function App() {
 
   const handleSaveProfile = useCallback(
     async (p: Profile) => {
-      const next = profiles.map((x) => (x.name === p.name ? p : x));
+      if (!selected) return;
+      const renamed = selected !== p.name;
+      // ищем по исходному имени — p.name мог измениться в редакторе
+      const next = profiles.map((x) => (x.name === selected ? p : x));
       setProfiles(next);
+      if (renamed) setSelected(p.name);
       await saveProfilesToDisk(next);
+      if (renamed) {
+        invoke("rename_container", { from: selected, to: p.name }).catch((e) =>
+          setError(`Не удалось переименовать контейнер: ${String(e)}`),
+        );
+      }
     },
-    [profiles, saveProfilesToDisk],
+    [profiles, selected, saveProfilesToDisk],
   );
 
   const handleDeleteProfile = useCallback(
@@ -140,12 +170,14 @@ export default function App() {
       setError(null);
       try {
         await invoke("start_container", { name });
+        appendLogLine(`▶ ${ts()} Запущен контейнер профиля «${name}»`);
         await refreshStatuses();
       } catch (e) {
+        appendLogLine(`✖ ${ts()} Не удалось запустить профиль «${name}»: ${String(e)}`);
         setError(String(e));
       }
     },
-    [refreshStatuses],
+    [refreshStatuses, appendLogLine],
   );
 
   const handleStop = useCallback(
@@ -153,12 +185,14 @@ export default function App() {
       setError(null);
       try {
         await invoke("stop_container", { name });
+        appendLogLine(`■ ${ts()} Остановлен контейнер профиля «${name}»`);
         await refreshStatuses();
       } catch (e) {
+        appendLogLine(`✖ ${ts()} Не удалось остановить профиль «${name}»: ${String(e)}`);
         setError(String(e));
       }
     },
-    [refreshStatuses],
+    [refreshStatuses, appendLogLine],
   );
 
   const handleConfigSaved = useCallback((cfg: AppConfig) => {

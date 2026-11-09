@@ -20,6 +20,7 @@ pub fn run() {
             list_containers,
             start_container,
             stop_container,
+            rename_container,
             open_logs,
             build_image,
             hf_list_files,
@@ -100,6 +101,11 @@ async fn start_container(app: tauri::AppHandle, name: String) -> Result<(), Stri
 #[tauri::command]
 async fn stop_container(name: String) -> Result<(), String> {
     docker::stop(&name).await
+}
+
+#[tauri::command]
+async fn rename_container(app: tauri::AppHandle, from: String, to: String) -> Result<(), String> {
+    docker::rename(&app, &from, &to).await
 }
 
 #[tauri::command]

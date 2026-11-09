@@ -183,6 +183,24 @@ pub async fn stop(profile_name: &str) -> Result<(), String> {
         .map(|_| ())
 }
 
+/// Переименование профиля: переименовывает контейнер (если существует, работает
+/// и для запущенного) и перезапускает log-tailer под новым именем.
+pub async fn rename(app: &AppHandle, from: &str, to: &str) -> Result<(), String> {
+    let cn_from = container_name(from);
+    let cn_to = container_name(to);
+    let exists = run_docker(&["inspect".into(), cn_from.clone()]).await.is_ok();
+    if exists {
+        run_docker(&["rename".into(), cn_from, cn_to.clone()])
+            .await
+            .map_err(|e| format!("Не удалось переименовать контейнер:\n{e}"))?;
+    }
+    kill_log_tailer(from);
+    if exists {
+        open_logs(app, to).await?;
+    }
+    Ok(())
+}
+
 /// Открыть live-логи профиля (заменяет предыдущий tailer).
 pub async fn open_logs(app: &AppHandle, profile_name: &str) -> Result<(), String> {
     let cn = container_name(profile_name);
